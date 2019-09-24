@@ -1,6 +1,7 @@
 #include "main.h"
 #include "driverlib/driverlib.h"
 #include "hal_LCD.h"
+#include <stdio.h>
 
 /*
  * This project contains some code samples that may be useful.
@@ -14,6 +15,63 @@ void sleep(volatile int i){
     // SW Delay
     do i--;
     while(i != 0);
+}
+
+void move_motor(){
+    const int sleep_time = 1000;
+    displayScrollText("ECE 298");
+    const int COUNTER_MAX = 550; // 500 is 90% of a rotation.
+    volatile int counter = 0;
+    while(counter <= COUNTER_MAX) //Do this when you want an infinite loop of code
+    {
+        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN3);
+        sleep(sleep_time);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN3);
+        sleep(sleep_time);
+
+        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN4);
+        sleep(sleep_time);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN4);
+        sleep(sleep_time);
+
+        counter++;
+
+    }
+
+}
+
+void read_uv(){
+    uint8_t PORT = GPIO_PORT_P1;
+    uint16_t PIN = GPIO_PIN7;
+    GPIO_setAsInputPin(PORT, PIN);
+
+    while(1){
+        volatile int initial_status = GPIO_getInputPinValue(PORT, PIN);
+        volatile int curr_status = initial_status;
+        while (curr_status == initial_status) {
+            curr_status = GPIO_getInputPinValue(PORT, PIN);
+        }
+        volatile int wait_time = 0;
+        if (curr_status == 1){
+            while (curr_status == 1){
+                wait_time++;
+                curr_status = GPIO_getInputPinValue(PORT, PIN);
+            }
+        } else {
+            while (curr_status == 0){
+                curr_status = GPIO_getInputPinValue(PORT, PIN);
+            }
+            while(curr_status == 1){
+                wait_time++;
+                curr_status = GPIO_getInputPinValue(PORT, PIN);
+            }
+        }
+        displayScrollText("SOME");
+//        sleep(10000);
+        printf("Hello World!");
+        printf("%d\n", wait_time);
+    }
+
 }
 
 void main(void)
@@ -55,27 +113,9 @@ void main(void)
 
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
-    const int sleep_time = 1000;
-    displayScrollText("ECE 298");
-    const int COUNTER_MAX = 550; // 500 is 90% of a rotation.
-    volatile int counter = 0;
-    while(counter <= COUNTER_MAX) //Do this when you want an infinite loop of code
-    {
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN3);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN3);
-        sleep(sleep_time);
-
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN4);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN4);
-        sleep(sleep_time);
-
-        counter++;
-
-    }
 
     displayScrollText("LOOP COMPLETE");
+    read_uv();
     sleep(10000);
 
     /*
