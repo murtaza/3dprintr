@@ -17,12 +17,26 @@ void sleep(volatile int i){
     while(i != 0);
 }
 
+void blink_led(){
+    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
+                                                // to activate previously configured port settings
+    P1DIR |= 0x01;                          // Set P1.0 to output direction
+    volatile int i;
+    for(i = 100; i != 0; i--) {
+        P1OUT ^= 0x01;                      // Toggle P1.0 using exclusive-OR
+
+        sleep(10000);
+    }
+    displayScrollText("LED DONE");
+}
+
 void move_motor(){
+
     const int sleep_time = 1000;
-    displayScrollText("ECE 298");
+
     const int COUNTER_MAX = 550; // 500 is 90% of a rotation.
     volatile int counter = 0;
-    while(counter <= COUNTER_MAX) //Do this when you want an infinite loop of code
+    while(counter <= COUNTER_MAX)
     {
         GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN3);
         sleep(sleep_time);
@@ -34,44 +48,77 @@ void move_motor(){
         GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN4);
         sleep(sleep_time);
 
-        counter++;
+        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN5);
+        sleep(sleep_time);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN5);
+        sleep(sleep_time);
 
+        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN6);
+        sleep(sleep_time);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN6);
+        sleep(sleep_time);
+
+        counter++;
     }
+
+    displayScrollText("MOTORS DONE");
 
 }
 
+void itoa(uint16_t x){
+    // 16 bit integer
+    uint16_t temp;
+    unsigned char out[17];
+    volatile int i = 15;
+    for (; i > -1; i--){
+        temp = (x >> i) & 0x0001;
+        if (temp != 0){
+            out[15 - i] = '1';
+        } else {
+            out[15 - i] = '0';
+        }
+    }
+    out[16] = '\0';
+//    i = 0;
+//    unsigned char hexout[5];
+//    for (; i < 4; i++){
+//        int piss = out[i] + out[Ii * 4  + 1
+//    }
+
+    displayScrollText(out);
+}
+
+
+
 void read_uv(){
+    // Setup.
     uint8_t PORT = GPIO_PORT_P1;
     uint16_t PIN = GPIO_PIN7;
     GPIO_setAsInputPin(PORT, PIN);
 
-    while(1){
-        volatile int initial_status = GPIO_getInputPinValue(PORT, PIN);
-        volatile int curr_status = initial_status;
-        while (curr_status == initial_status) {
+    volatile int initial_status = GPIO_getInputPinValue(PORT, PIN);
+    volatile int curr_status = initial_status;
+    while (curr_status == initial_status) {
+        curr_status = GPIO_getInputPinValue(PORT, PIN);
+    }
+    volatile uint16_t wait_time = 0;
+    if (curr_status == 1){
+        while (curr_status == 1){
+            wait_time++;
             curr_status = GPIO_getInputPinValue(PORT, PIN);
         }
-        volatile int wait_time = 0;
-        if (curr_status == 1){
-            while (curr_status == 1){
-                wait_time++;
-                curr_status = GPIO_getInputPinValue(PORT, PIN);
-            }
-        } else {
-            while (curr_status == 0){
-                curr_status = GPIO_getInputPinValue(PORT, PIN);
-            }
-            while(curr_status == 1){
-                wait_time++;
-                curr_status = GPIO_getInputPinValue(PORT, PIN);
-            }
+    } else {
+        while (curr_status == 0){
+            curr_status = GPIO_getInputPinValue(PORT, PIN);
         }
-        displayScrollText("SOME");
-//        sleep(10000);
-        printf("Hello World!");
-        printf("%d\n", wait_time);
+        while(curr_status == 1){
+            wait_time++;
+            curr_status = GPIO_getInputPinValue(PORT, PIN);
+        }
     }
-
+//    showHex(wait_time);
+    itoa(wait_time);
+    displayScrollText("UV SENSOR DONE");
 }
 
 void main(void)
@@ -114,7 +161,8 @@ void main(void)
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
 
-    displayScrollText("LOOP COMPLETE");
+    displayScrollText("STARTING");
+    move_motor();
     read_uv();
     sleep(10000);
 
