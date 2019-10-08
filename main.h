@@ -2,7 +2,7 @@
 #define MAIN_H_
 
 #include "driverlib/driverlib.h"
-
+#pragma once
 #define TIMER_A_PERIOD  1000 //T = 1/f = (TIMER_A_PERIOD * 1 us)
 #define HIGH_COUNT      500  //Number of cycles signal is high (Duty Cycle = HIGH_COUNT / TIMER_A_PERIOD)
 

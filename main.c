@@ -1,21 +1,12 @@
+#include <stdio.h>
 #include "main.h"
 #include "driverlib/driverlib.h"
 #include "hal_LCD.h"
-#include <stdio.h>
-
-/*
- * This project contains some code samples that may be useful.
- *
- */
+#include "distance.h"
+#include "util.h"
 
 char ADCState = 0; //Busy state of the ADC
 int16_t ADCResult = 0; //Storage for the ADC conversion result
-
-void sleep(volatile int i){
-    // SW Delay
-    do i--;
-    while(i != 0);
-}
 
 void blink_led(){
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
@@ -30,7 +21,8 @@ void blink_led(){
     displayScrollText("LED DONE");
 }
 
-void move_motor(){
+void move_motor()
+{
 
     const int sleep_time = 1000;
 
@@ -65,65 +57,9 @@ void move_motor(){
 
 }
 
-void itoa(uint16_t x){
-    // 16 bit integer
-    uint16_t temp;
-    unsigned char out[17];
-    volatile int i = 15;
-    for (; i > -1; i--){
-        temp = (x >> i) & 0x0001;
-        if (temp != 0){
-            out[15 - i] = '1';
-        } else {
-            out[15 - i] = '0';
-        }
-    }
-    out[16] = '\0';
-//    i = 0;
-//    unsigned char hexout[5];
-//    for (; i < 4; i++){
-//        int piss = out[i] + out[Ii * 4  + 1
-//    }
-
-    displayScrollText(out);
-}
-
-
-
-void read_uv(){
-    // Setup.
-    uint8_t PORT = GPIO_PORT_P1;
-    uint16_t PIN = GPIO_PIN7;
-    GPIO_setAsInputPin(PORT, PIN);
-
-    volatile int initial_status = GPIO_getInputPinValue(PORT, PIN);
-    volatile int curr_status = initial_status;
-    while (curr_status == initial_status) {
-        curr_status = GPIO_getInputPinValue(PORT, PIN);
-    }
-    volatile uint16_t wait_time = 0;
-    if (curr_status == 1){
-        while (curr_status == 1){
-            wait_time++;
-            curr_status = GPIO_getInputPinValue(PORT, PIN);
-        }
-    } else {
-        while (curr_status == 0){
-            curr_status = GPIO_getInputPinValue(PORT, PIN);
-        }
-        while(curr_status == 1){
-            wait_time++;
-            curr_status = GPIO_getInputPinValue(PORT, PIN);
-        }
-    }
-//    showHex(wait_time);
-    itoa(wait_time);
-    displayScrollText("UV SENSOR DONE");
-}
-
 void main(void)
 {
-    char buttonState = 0; //Current button press state (to allow edge detection)
+    // char buttonState = 0; //Current button press state (to allow edge detection)
 
     /*
      * Functions with two underscores in front are called compiler intrinsics.
@@ -161,9 +97,16 @@ void main(void)
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
 
-    displayScrollText("STARTING");
-    move_motor();
-    read_uv();
+    displayScrollText("FUCK GOOO");
+    distance_sensor dist_sensor;
+    dist_sensor.trigger_port = GPIO_PORT_P8;
+    dist_sensor.trigger_pin = GPIO_PIN3;
+    dist_sensor.echo_port = GPIO_PORT_P8;
+    dist_sensor.echo_pin = GPIO_PIN2;
+    setup_sensor(&dist_sensor);
+    while (1){
+        read_distance_v2(&dist_sensor);
+    }
     sleep(10000);
 
     /*
