@@ -5,10 +5,11 @@
 #include "distance.h"
 #include "util.h"
 
-char ADCState = 0; //Busy state of the ADC
+char ADCState = 0;     //Busy state of the ADC
 int16_t ADCResult = 0; //Storage for the ADC conversion result
 
-typedef enum {
+typedef enum
+{
     DIRECTION_X,
     DIRECTION_Y,
     DIRECTION_Z,
@@ -19,28 +20,31 @@ unsigned int graph_x = 0;
 unsigned int graph_y = 0;
 unsigned int graph_z = 0;
 
-typedef struct {
-  int lcdmem_12;
-  int lcdmem_13;
+typedef struct
+{
+    int lcdmem_12;
+    int lcdmem_13;
 } lcdbat_tuple_t;
 
-typedef struct {
-  char letter;
-  int pos;
+typedef struct
+{
+    char letter;
+    int pos;
 } lcdchar_tuple_t;
 
 void init_graph()
 {
     // TODO: Clem
-
 }
-void blink_led(){
-    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
-                                                // to activate previously configured port settings
-    P1DIR |= 0x01;                          // Set P1.0 to output direction
+void blink_led()
+{
+    PM5CTL0 &= ~LOCKLPM5; // Disable the GPIO power-on default high-impedance mode
+                          // to activate previously configured port settings
+    P1DIR |= 0x01;        // Set P1.0 to output direction
     volatile int i;
-    for(i = 100; i != 0; i--) {
-        P1OUT ^= 0x01;                      // Toggle P1.0 using exclusive-OR
+    for (i = 100; i != 0; i--)
+    {
+        P1OUT ^= 0x01; // Toggle P1.0 using exclusive-OR
 
         sleep(10000);
     }
@@ -53,7 +57,7 @@ void move_motor()
 
     const int COUNTER_MAX = 550; // 500 is 90% of a rotation.
     volatile int counter = 0;
-    while(counter <= COUNTER_MAX)
+    while (counter <= COUNTER_MAX)
     {
         GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN3);
         sleep(sleep_time);
@@ -79,13 +83,12 @@ void move_motor()
     }
 
     displayScrollText("MOTORS DONE");
-
 }
 
 void graph(direction_t d, int movement)
 {
-  const lcdbat_tuple_t x_segments[] = { {0, 0x01}, {0, 0x03}, {0x20, 0x03}, {0x20, 0x07}, {0x60, 0x07}, {0x60, 0x0F}, {0xE0, 0x0F}, {0xF0, 0x0F} };
-  const char y_segments[8][6] =
+    const lcdbat_tuple_t x_segments[] = {{0, 0x01}, {0, 0x03}, {0x20, 0x03}, {0x20, 0x07}, {0x60, 0x07}, {0x60, 0x0F}, {0xE0, 0x0F}, {0xF0, 0x0F}};
+    const char y_segments[8][6] =
         {
             {0x02, 0x00, 0x00, 0x00, 0x00, 0x00},
             {0x03, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -94,53 +97,65 @@ void graph(direction_t d, int movement)
             {0x03, 0x03, 0x02, 0x00, 0x00, 0x00},
             {0x03, 0x03, 0x03, 0x00, 0x00, 0x00},
             {0x03, 0x03, 0x03, 0x02, 0x00, 0x00},
-            {0x03, 0x03, 0x03, 0x03, 0x00, 0x00}
-        };
-  int i = 0;
-  if (d == DIRECTION_X) {
-      int limit = graph_x + movement;
-      if (movement > 0) {
-          for (i = graph_x + 1; i <= limit; i++) {
-              LCDMEM[12] = x_segments[i].lcdmem_12;
-              LCDMEM[13] = x_segments[i].lcdmem_13;
-              __delay_cycles(200000);
-          }
-          graph_x = graph_x + movement;
-      } else if (movement < 0) {
-          i = graph_x - 1;
-          int limit = graph_x + movement;
-          for (i = graph_x - 1; i >= limit; i--) {
-              LCDMEM[12] = x_segments[i].lcdmem_12;
-              LCDMEM[13] = x_segments[i].lcdmem_13;
-              __delay_cycles(200000);
-          }
-          graph_x = graph_x + movement;
-      }
-
-  } else if (d == DIRECTION_Y) {
-      int digit_locations[] = {2, 3, 4, 5, 1, 9};
-      int limit = graph_y + movement;
-      if (movement > 0) {
-          for (i = graph_y + 1; i <= limit; i++ ) {
-              int j = 0;
-              for (; j < 5; j++) {
-                  LCDMEMW[digit_locations[j]] = y_segments[i][j];
-              }
-              __delay_cycles(200000);
-          }
-          graph_y = graph_y + movement;
-      }
-      else if (movement < 0) {
-          for (i = graph_y - 1; i >= limit; i-- ) {
-              int j = 0;
-              for (; j < 5; j++) {
-                  LCDMEMW[digit_locations[j]] = y_segments[i][j];
-              }
-              __delay_cycles(200000);
-          }
-          graph_y = graph_y + movement;
-      }
-  }
+            {0x03, 0x03, 0x03, 0x03, 0x00, 0x00}};
+    int i = 0;
+    if (d == DIRECTION_X)
+    {
+        int limit = graph_x + movement;
+        if (movement > 0)
+        {
+            for (i = graph_x + 1; i <= limit; i++)
+            {
+                LCDMEM[12] = x_segments[i].lcdmem_12;
+                LCDMEM[13] = x_segments[i].lcdmem_13;
+                __delay_cycles(200000);
+            }
+            graph_x = graph_x + movement;
+        }
+        else if (movement < 0)
+        {
+            i = graph_x - 1;
+            int limit = graph_x + movement;
+            for (i = graph_x - 1; i >= limit; i--)
+            {
+                LCDMEM[12] = x_segments[i].lcdmem_12;
+                LCDMEM[13] = x_segments[i].lcdmem_13;
+                __delay_cycles(200000);
+            }
+            graph_x = graph_x + movement;
+        }
+    }
+    else if (d == DIRECTION_Y)
+    {
+        int digit_locations[] = {2, 3, 4, 5, 1, 9};
+        int limit = graph_y + movement;
+        if (movement > 0)
+        {
+            for (i = graph_y + 1; i <= limit; i++)
+            {
+                int j = 0;
+                for (; j < 5; j++)
+                {
+                    LCDMEMW[digit_locations[j]] = y_segments[i][j];
+                }
+                __delay_cycles(200000);
+            }
+            graph_y = graph_y + movement;
+        }
+        else if (movement < 0)
+        {
+            for (i = graph_y - 1; i >= limit; i--)
+            {
+                int j = 0;
+                for (; j < 5; j++)
+                {
+                    LCDMEMW[digit_locations[j]] = y_segments[i][j];
+                }
+                __delay_cycles(200000);
+            }
+            graph_y = graph_y + movement;
+        }
+    }
 }
 
 void main(void)
@@ -163,14 +178,14 @@ void main(void)
     WDT_A_hold(WDT_A_BASE);
 
     // Initializations - see functions for more detail
-    Init_GPIO();    //Sets all pins to output low as a default
-    Init_PWM();     //Sets up a PWM output
-    Init_ADC();     //Sets up the ADC to sample
-    Init_Clock();   //Sets up the necessary system clocks
-    Init_UART();    //Sets up an echo over a COM port
-    Init_LCD();     //Sets up the LaunchPad LCD display
+    Init_GPIO();  //Sets all pins to output low as a default
+    Init_PWM();   //Sets up a PWM output
+    Init_ADC();   //Sets up the ADC to sample
+    Init_Clock(); //Sets up the necessary system clocks
+    Init_UART();  //Sets up an echo over a COM port
+    Init_LCD();   //Sets up the LaunchPad LCD display
 
-     /*
+    /*
      * The MSP430 MCUs have a variety of low power modes. They can be almost
      * completely off and turn back on only when an interrupt occurs. You can
      * look up the power modes in the Family User Guide under the Power Management
@@ -185,14 +200,23 @@ void main(void)
 
     init_graph();
 
-    displayScrollText("STARTING");
-    distance_sensor dist_sensor;
-    dist_sensor.trigger_port = GPIO_PORT_P8;
-    dist_sensor.trigger_pin = GPIO_PIN3;
-    dist_sensor.echo_port = GPIO_PORT_P8;
-    dist_sensor.echo_pin = GPIO_PIN2;
-    setup_sensor(&dist_sensor);
-    
+    displayScrollText("BIG DICK BANDITO");
+
+    // All are triggered by the same port/pin.
+    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {GPIO_PORT_P8, GPIO_PORT_P8, GPIO_PORT_P8, GPIO_PORT_P8};
+    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {GPIO_PIN1, GPIO_PIN1, GPIO_PIN1, GPIO_PIN1};
+
+    // 1.7, 1.6, 5.0, 5.2
+    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {GPIO_PORT_P1, GPIO_PORT_P1, GPIO_PORT_P5, GPIO_PORT_P5};
+    PIN ECHO_PINS[NUM_DIST_SENSORS] = {GPIO_PIN7, GPIO_PIN6, GPIO_PIN0, GPIO_PIN2};
+
+    distance_sensor dist_sensors[NUM_DIST_SENSORS];
+    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
+    while (1)
+    {
+        displayScrollText("GETTING DIST DATA");
+        ISR_routine(dist_sensors, NUM_DIST_SENSORS);
+    }
     sleep(10000);
 
     direction_t dx = DIRECTION_X;
@@ -207,12 +231,8 @@ void main(void)
     graph(dx, 7);
     __delay_cycles(200000);
     graph(dy, 7);
-    while (1){
-        read_distance_v2(&dist_sensor);
-    }
 
-    /*
-     * You can use the following code if you plan on only using interrupts
+    /* You can use the following code if you plan on only using interrupts
      * to handle all your system events since you don't need any infinite loop of code.
      *
      * //Enter LPM0 - interrupts only
@@ -220,30 +240,28 @@ void main(void)
      * //For debugger to let it know that you meant for there to be no more code
      * __no_operation();
     */
-
 }
-
 
 void Init_GPIO(void)
 {
     // Set all GPIO pins to output low to prevent floating input and reduce power consumption
-    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P8, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P7, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P8, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
 
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P3, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P5, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P6, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
-    GPIO_setAsOutputPin(GPIO_PORT_P8, GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3|GPIO_PIN4|GPIO_PIN5|GPIO_PIN6|GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P3, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P5, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P6, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P7, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    GPIO_setAsOutputPin(GPIO_PORT_P8, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN4 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
 
     //Set LaunchPad switches as inputs - they are active low, meaning '1' until pressed
     GPIO_setAsInputPinWithPullUpResistor(SW1_PORT, SW1_PIN);
@@ -314,17 +332,17 @@ void Init_UART(void)
     //SMCLK = 1MHz, Baudrate = 9600
     //UCBRx = 6, UCBRFx = 8, UCBRSx = 17, UCOS16 = 1
     EUSCI_A_UART_initParam param = {0};
-        param.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;
-        param.clockPrescalar    = 6;
-        param.firstModReg       = 8;
-        param.secondModReg      = 17;
-        param.parity            = EUSCI_A_UART_NO_PARITY;
-        param.msborLsbFirst     = EUSCI_A_UART_LSB_FIRST;
-        param.numberofStopBits  = EUSCI_A_UART_ONE_STOP_BIT;
-        param.uartMode          = EUSCI_A_UART_MODE;
-        param.overSampling      = 1;
+    param.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;
+    param.clockPrescalar = 6;
+    param.firstModReg = 8;
+    param.secondModReg = 17;
+    param.parity = EUSCI_A_UART_NO_PARITY;
+    param.msborLsbFirst = EUSCI_A_UART_LSB_FIRST;
+    param.numberofStopBits = EUSCI_A_UART_ONE_STOP_BIT;
+    param.uartMode = EUSCI_A_UART_MODE;
+    param.overSampling = 1;
 
-    if(STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A0_BASE, &param))
+    if (STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A0_BASE, &param))
     {
         return;
     }
@@ -338,9 +356,8 @@ void Init_UART(void)
 }
 
 /* EUSCI A0 UART ISR - Echoes data back to PC host */
-#pragma vector=USCI_A0_VECTOR
-__interrupt
-void EUSCIA0_ISR(void)
+#pragma vector = USCI_A0_VECTOR
+__interrupt void EUSCIA0_ISR(void)
 {
     uint8_t RxStatus = EUSCI_A_UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG);
 
@@ -364,12 +381,12 @@ void Init_PWM(void)
      *
      */
     //Generate PWM - Timer runs in Up-Down mode
-    param.clockSource           = TIMER_A_CLOCKSOURCE_SMCLK;
-    param.clockSourceDivider    = TIMER_A_CLOCKSOURCE_DIVIDER_1;
-    param.timerPeriod           = TIMER_A_PERIOD; //Defined in main.h
-    param.compareRegister       = TIMER_A_CAPTURECOMPARE_REGISTER_1;
-    param.compareOutputMode     = TIMER_A_OUTPUTMODE_RESET_SET;
-    param.dutyCycle             = HIGH_COUNT; //Defined in main.h
+    param.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
+    param.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_1;
+    param.timerPeriod = TIMER_A_PERIOD; //Defined in main.h
+    param.compareRegister = TIMER_A_CAPTURECOMPARE_REGISTER_1;
+    param.compareOutputMode = TIMER_A_OUTPUTMODE_RESET_SET;
+    param.dutyCycle = HIGH_COUNT; //Defined in main.h
 
     //PWM_PORT PWM_PIN (defined in main.h) as PWM output
     GPIO_setAsPeripheralModuleFunctionOutputPin(PWM_PORT, PWM_PIN, GPIO_PRIMARY_MODULE_FUNCTION);
@@ -430,9 +447,8 @@ void Init_ADC(void)
 }
 
 //ADC interrupt service routine
-#pragma vector=ADC_VECTOR
-__interrupt
-void ADC_ISR(void)
+#pragma vector = ADC_VECTOR
+__interrupt void ADC_ISR(void)
 {
     uint8_t ADCStatus = ADC_getInterruptStatus(ADC_BASE, ADC_COMPLETED_INTERRUPT_FLAG);
 
