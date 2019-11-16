@@ -1,41 +1,8 @@
-#include <stdio.h>
 #include "main.h"
-#include "driverlib/driverlib.h"
-#include "hal_LCD.h"
-#include "distance.h"
-#include "util.h"
 
 char ADCState = 0;     //Busy state of the ADC
 int16_t ADCResult = 0; //Storage for the ADC conversion result
 
-typedef enum
-{
-    DIRECTION_X,
-    DIRECTION_Y,
-    DIRECTION_Z,
-
-} direction_t;
-
-unsigned int graph_x = 0;
-unsigned int graph_y = 0;
-unsigned int graph_z = 0;
-
-typedef struct
-{
-    int lcdmem_12;
-    int lcdmem_13;
-} lcdbat_tuple_t;
-
-typedef struct
-{
-    char letter;
-    int pos;
-} lcdchar_tuple_t;
-
-void init_graph()
-{
-    // TODO: Clem
-}
 void blink_led()
 {
     PM5CTL0 &= ~LOCKLPM5; // Disable the GPIO power-on default high-impedance mode
@@ -51,116 +18,8 @@ void blink_led()
     displayScrollText("LED DONE");
 }
 
-void move_motor()
-{
-    const int sleep_time = 1000;
-
-    const int COUNTER_MAX = 550; // 500 is 90% of a rotation.
-    volatile int counter = 0;
-    while (counter <= COUNTER_MAX)
-    {
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN3);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN3);
-        sleep(sleep_time);
-
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN4);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN4);
-        sleep(sleep_time);
-
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN5);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN5);
-        sleep(sleep_time);
-
-        GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN6);
-        sleep(sleep_time);
-        GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN6);
-        sleep(sleep_time);
-
-        counter++;
-    }
-
-    displayScrollText("MOTORS DONE");
-}
-
-void graph(direction_t d, int movement)
-{
-    const lcdbat_tuple_t x_segments[] = {{0, 0x01}, {0, 0x03}, {0x20, 0x03}, {0x20, 0x07}, {0x60, 0x07}, {0x60, 0x0F}, {0xE0, 0x0F}, {0xF0, 0x0F}};
-    const char y_segments[8][6] =
-        {
-            {0x02, 0x00, 0x00, 0x00, 0x00, 0x00},
-            {0x03, 0x00, 0x00, 0x00, 0x00, 0x00},
-            {0x03, 0x02, 0x00, 0x00, 0x00, 0x00},
-            {0x03, 0x03, 0x00, 0x00, 0x00, 0x00},
-            {0x03, 0x03, 0x02, 0x00, 0x00, 0x00},
-            {0x03, 0x03, 0x03, 0x00, 0x00, 0x00},
-            {0x03, 0x03, 0x03, 0x02, 0x00, 0x00},
-            {0x03, 0x03, 0x03, 0x03, 0x00, 0x00}};
-    int i = 0;
-    if (d == DIRECTION_X)
-    {
-        int limit = graph_x + movement;
-        if (movement > 0)
-        {
-            for (i = graph_x + 1; i <= limit; i++)
-            {
-                LCDMEM[12] = x_segments[i].lcdmem_12;
-                LCDMEM[13] = x_segments[i].lcdmem_13;
-                __delay_cycles(200000);
-            }
-            graph_x = graph_x + movement;
-        }
-        else if (movement < 0)
-        {
-            i = graph_x - 1;
-            int limit = graph_x + movement;
-            for (i = graph_x - 1; i >= limit; i--)
-            {
-                LCDMEM[12] = x_segments[i].lcdmem_12;
-                LCDMEM[13] = x_segments[i].lcdmem_13;
-                __delay_cycles(200000);
-            }
-            graph_x = graph_x + movement;
-        }
-    }
-    else if (d == DIRECTION_Y)
-    {
-        int digit_locations[] = {2, 3, 4, 5, 1, 9};
-        int limit = graph_y + movement;
-        if (movement > 0)
-        {
-            for (i = graph_y + 1; i <= limit; i++)
-            {
-                int j = 0;
-                for (; j < 5; j++)
-                {
-                    LCDMEMW[digit_locations[j]] = y_segments[i][j];
-                }
-                __delay_cycles(200000);
-            }
-            graph_y = graph_y + movement;
-        }
-        else if (movement < 0)
-        {
-            for (i = graph_y - 1; i >= limit; i--)
-            {
-                int j = 0;
-                for (; j < 5; j++)
-                {
-                    LCDMEMW[digit_locations[j]] = y_segments[i][j];
-                }
-                __delay_cycles(200000);
-            }
-            graph_y = graph_y + movement;
-        }
-    }
-}
-
 void main(void)
 {
-    // char buttonState = 0; //Current button press state (to allow edge detection)
 
     /*
      * Functions with two underscores in front are called compiler intrinsics.
@@ -198,39 +57,31 @@ void main(void)
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
 
-    init_graph();
-
-    displayScrollText("BIG DICK BANDITO");
-
+    displayScrollText("BDB");
     // All are triggered by the same port/pin.
-    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {GPIO_PORT_P8, GPIO_PORT_P8, GPIO_PORT_P8, GPIO_PORT_P8};
-    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {GPIO_PIN1, GPIO_PIN1, GPIO_PIN1, GPIO_PIN1};
+    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {TRIG_PORT, TRIG_PORT, TRIG_PORT, TRIG_PORT};
+    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {TRIG_PIN, TRIG_PIN, TRIG_PIN, TRIG_PIN};
 
     // 1.7, 1.6, 5.0, 5.2
-    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {GPIO_PORT_P1, GPIO_PORT_P1, GPIO_PORT_P5, GPIO_PORT_P5};
-    PIN ECHO_PINS[NUM_DIST_SENSORS] = {GPIO_PIN7, GPIO_PIN6, GPIO_PIN0, GPIO_PIN2};
+    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {U_SENSOR1_PORT, U_SENSOR2_PORT, U_SENSOR3_PORT, U_SENSOR4_PORT};
+    PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
 
     distance_sensor dist_sensors[NUM_DIST_SENSORS];
-    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
+
     while (1)
     {
-        displayScrollText("GETTING DIST DATA");
-        ISR_routine(dist_sensors, NUM_DIST_SENSORS);
+        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
     }
+
+//    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
+
+    //    while (1)
+    //    {
+    //        displayScrollText("GDD");
+    //        ISR_routine(dist_sensors, NUM_DIST_SENSORS);
+    //    }
+
     sleep(10000);
-
-    direction_t dx = DIRECTION_X;
-    direction_t dy = DIRECTION_Y;
-    direction_t dz = DIRECTION_Z;
-
-    __delay_cycles(200000);
-    graph(dx, -3);
-    __delay_cycles(200000);
-    graph(dy, -3);
-    __delay_cycles(200000);
-    graph(dx, 7);
-    __delay_cycles(200000);
-    graph(dy, 7);
 
     /* You can use the following code if you plan on only using interrupts
      * to handle all your system events since you don't need any infinite loop of code.

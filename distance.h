@@ -5,7 +5,6 @@
 #include "driverlib/driverlib.h"
 #include "hal_LCD.h"
 
-#define NUM_DIST_SENSORS 4
 typedef struct distance_sensor
 {
 
@@ -19,7 +18,9 @@ typedef struct distance_sensor
 
 // Eventually will run on an interrupt. Not sure how arguments will be passed then.
 // MF TODO: Run this on an interrupt.
-void ISR_routine(distance_sensor *sensors, int num_sensors);
+void uv_ISR_routine(distance_sensor *sensors, int num_sensors);
+
+void uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin);
 
 void itoa(uint16_t x);
 

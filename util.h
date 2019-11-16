@@ -1,6 +1,7 @@
+#pragma once
 #include <stdio.h>
+#include <string.h>
 #include "driverlib/driverlib.h"
-#include "string.h"
 
 #pragma once
 typedef uint8_t PORT;
