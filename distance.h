@@ -20,7 +20,7 @@ typedef struct distance_sensor
 // MF TODO: Run this on an interrupt.
 void uv_ISR_routine(distance_sensor *sensors, int num_sensors);
 
-void uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin);
+unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin);
 
 void itoa(uint16_t x);
 

@@ -80,7 +80,7 @@ void _setup_sensor(distance_sensor *ds)
     displayScrollText("SS");
 }
 
-void uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
+unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
 {
     GPIO_setAsInputPin(echo_port, echo_pin);
     GPIO_setAsOutputPin(trig_port, trig_pin);
@@ -88,7 +88,7 @@ void uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
     // Ensure Trigger is set to low, and wait a bit.
     GPIO_setOutputLowOnPin(trig_port, trig_pin);
     sleep(100);
-    displayScrollText("SS");
+    // displayScrollText("SS");
 
     GPIO_setOutputHighOnPin(trig_port, trig_pin);
     sleep(50);
@@ -109,9 +109,10 @@ void uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
         cycles += 3;
         curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     }
-    displayScrollText("CYCLES");
-    showHex(cycles);
-    __delay_cycles(10000000);
+    // displayScrollText("CYCLES");
+    // showHex(cycles);
+    // __delay_cycles(10000000);
+    return cycles;
 }
 
 void read_distance_v2(distance_sensor *ds)

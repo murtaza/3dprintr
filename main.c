@@ -20,7 +20,6 @@ void blink_led()
 
 void main(void)
 {
-
     /*
      * Functions with two underscores in front are called compiler intrinsics.
      * They are documented in the compiler user guide, not the IDE or MCU guides.
@@ -67,13 +66,15 @@ void main(void)
     PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
 
     distance_sensor dist_sensors[NUM_DIST_SENSORS];
-
-    while (1)
+    setup_timer_interrupts();
+    displayScrollText("SPIN");
+    for (;;)
     {
-        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
+        displayScrollText("GOOD");
+        showHex(0);
     }
 
-//    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
+    //    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
 
     //    while (1)
     //    {
