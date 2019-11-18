@@ -22,21 +22,18 @@ void setup_timer_interrupts(void)
     //Start timer
     Timer_A_clearTimerInterrupt(TIMER_A0_BASE);
 
-    Timer_A_initUpModeParam param = {0};
-    param.clockSource = TIMER_A_CLOCKSOURCE_ACLK;
-    param.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_32;
-    // count up to the following number (period)
-    param.timerPeriod = TIMER_PERIOD;
-    param.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_DISABLE;
-    param.captureCompareInterruptEnable_CCR0_CCIE =
-        TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE;
-    param.timerClear = TIMER_A_DO_CLEAR;
-    param.startTimer = true;
+    Timer_A_initUpModeParam param =
+    {
+        TIMER_A_CLOCKSOURCE_ACLK,               // ACLK clock source ~32.768kHz
+        TIMER_A_CLOCKSOURCE_DIVIDER_1,          // ACLK/?? = ??kHz
+        32,                                  // debounce period
+        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE ,    // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR,                       // Clear value
+        true                                    // Start Timer
+    };
 
     Timer_A_initUpMode(TIMER_A0_BASE, &param);
-
-    //Enter LPM0, enable interrupts
-    __bis_SR_register(LPM3_bits + GIE);
 }
 
 //-------------------------  T I M E R A 0 _ I S R  ----------------------------
