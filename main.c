@@ -68,10 +68,9 @@ void main(void)
     distance_sensor dist_sensors[NUM_DIST_SENSORS];
     setup_timer_interrupts();
     displayScrollText("SPIN");
-    for (;;)
-    {
-        displayScrollText("GOOD");
-        showHex(0);
+
+    while (1) {
+        handle_uart_flags();
     }
 
     //    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
@@ -205,20 +204,6 @@ void Init_UART(void)
 
     // Enable EUSCI_A0 RX interrupt
     EUSCI_A_UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
-}
-
-/* EUSCI A0 UART ISR - Echoes data back to PC host */
-#pragma vector = USCI_A0_VECTOR
-__interrupt void EUSCIA0_ISR(void)
-{
-    uint8_t RxStatus = EUSCI_A_UART_getInterruptStatus(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG);
-
-    EUSCI_A_UART_clearInterrupt(EUSCI_A0_BASE, RxStatus);
-
-    if (RxStatus)
-    {
-        EUSCI_A_UART_transmitData(EUSCI_A0_BASE, EUSCI_A_UART_receiveData(EUSCI_A0_BASE));
-    }
 }
 
 /* PWM Initialization */

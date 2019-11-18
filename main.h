@@ -4,6 +4,7 @@
 #include "driverlib/driverlib.h"
 #include "hal_LCD.h"
 
+#include "uart.h"
 #include "mytimer.h"
 #include "distance.h"
 #include "util.h"
