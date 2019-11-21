@@ -84,19 +84,20 @@ unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
 {
     GPIO_setAsInputPin(echo_port, echo_pin);
     GPIO_setAsOutputPin(trig_port, trig_pin);
+    volatile uint8_t trig_count = 0;
+    while (trig_count < 3) {
+        // Ensure Trigger is set to low, and wait a bit.
+        GPIO_setOutputLowOnPin(trig_port, trig_pin);
+        __delay_cycles(8);
 
-    // Ensure Trigger is set to low, and wait a bit.
-    GPIO_setOutputLowOnPin(trig_port, trig_pin);
-    __delay_cycles(1);
+        GPIO_setOutputHighOnPin(trig_port, trig_pin);
+        __delay_cycles(8);
+        GPIO_setOutputLowOnPin(trig_port, trig_pin);
+        trig_count++;
+    }
 
-    GPIO_setOutputHighOnPin(trig_port, trig_pin);
-    __delay_cycles(1);
-    GPIO_setOutputLowOnPin(trig_port, trig_pin);
-
-    volatile int status = GPIO_getInputPinValue(echo_port, echo_pin);
-    volatile int curr_status = status;
+    volatile int curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     unsigned int cycles = 0;
-
     // While it's low, wait.
     while (curr_status == 0)
     {
@@ -110,7 +111,6 @@ unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
     }
     displayScrollText("CYCLES");
     showHex(cycles);
-    __delay_cycles(10000000);
     return cycles;
 }
 

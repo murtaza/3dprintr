@@ -81,12 +81,12 @@ void main(void)
     PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
 
     distance_sensor dist_sensors[NUM_DIST_SENSORS];
-    setup_timer_interrupts();
+//    setup_timer_interrupts();
     displayScrollText("SPIN");
 
     while (1) {
-        //uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
-        handle_uart_flags();
+        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
+//        handle_uart_flags();
         //handle_sensor_distance();
     }
 
