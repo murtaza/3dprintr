@@ -92,9 +92,9 @@ void move_y_motor(uint8_t quarterRotations, uint8_t dir)
     {
         switch (step) {
         case 0:
-            GPIO_setOutputHighOnPin(MOTOR2_PORT1, MOTOR2_PIN1);
-            GPIO_setOutputHighOnPin(MOTOR2_PORT2, MOTOR2_PIN2);
-            GPIO_setOutputHighOnPin(MOTOR2_PORT3, MOTOR2_PIN3);
+            GPIO_setOutputLowOnPin(MOTOR2_PORT1, MOTOR2_PIN1);
+            GPIO_setOutputLowOnPin(MOTOR2_PORT2, MOTOR2_PIN2);
+            GPIO_setOutputLowOnPin(MOTOR2_PORT3, MOTOR2_PIN3);
             GPIO_setOutputHighOnPin(MOTOR2_PORT4, MOTOR2_PIN4);
             break;
         case 1:

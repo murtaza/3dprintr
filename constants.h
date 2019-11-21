@@ -8,7 +8,7 @@
 // Ultrasonic sensors:
 // 2.5 This is the common port to trigger all the sensors.
 extern const PORT TRIG_PORT;
-extern const PORT TRIG_PIN;
+extern const PIN TRIG_PIN;
 
 // 8.1, 2.7, 8.0, 5.1
 extern const PORT U_SENSOR1_PORT;

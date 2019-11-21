@@ -55,7 +55,7 @@ void itoa(uint16_t x)
         }
     }
     out[16] = '\0';
-    displayScrollText(out);
+    //displayScrollText(out);
 }
 
 // Trigger sends a 3v3 (should be 5V) pulse to the the trigger pin for 10us
@@ -87,11 +87,10 @@ unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
 
     // Ensure Trigger is set to low, and wait a bit.
     GPIO_setOutputLowOnPin(trig_port, trig_pin);
-    sleep(100);
-    // displayScrollText("SS");
+    __delay_cycles(1);
 
     GPIO_setOutputHighOnPin(trig_port, trig_pin);
-    sleep(50);
+    __delay_cycles(1);
     GPIO_setOutputLowOnPin(trig_port, trig_pin);
 
     volatile int status = GPIO_getInputPinValue(echo_port, echo_pin);

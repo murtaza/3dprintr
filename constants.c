@@ -3,7 +3,7 @@
 // Ultrasonic sensors:
 // 2.5 This is the common port to trigger all the sensors.
 const PORT TRIG_PORT = GPIO_PORT_P2;
-const PORT TRIG_PIN = GPIO_PIN5;
+const PIN TRIG_PIN = GPIO_PIN5;
 
 // 8.1, 2.7, 8.0, 5.1
 const PORT U_SENSOR1_PORT = GPIO_PORT_P8;

@@ -30,7 +30,7 @@ void main(void)
      * */
 
     //Turn off interrupts during initialization
-    __disable_interrupt();
+      __disable_interrupt();
 
     //Stop watchdog timer unless you plan on using it
     WDT_A_hold(WDT_A_BASE);
@@ -56,6 +56,21 @@ void main(void)
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
 
+//    int test = 0;
+//    GPIO_setOutputHighOnPin(MOTOR1_PORT1, MOTOR1_PIN1);
+//    GPIO_setOutputHighOnPin(MOTOR1_PORT2, MOTOR1_PIN2);
+//    GPIO_setOutputHighOnPin(MOTOR1_PORT3, MOTOR1_PIN3);
+//    GPIO_setOutputHighOnPin(MOTOR1_PORT4, MOTOR1_PIN4);
+//    GPIO_setOutputHighOnPin(MOTOR2_PORT1, MOTOR2_PIN1);
+//    GPIO_setOutputHighOnPin(MOTOR2_PORT2, MOTOR2_PIN2);
+//    GPIO_setOutputHighOnPin(MOTOR2_PORT3, MOTOR2_PIN3);
+//    GPIO_setOutputHighOnPin(MOTOR2_PORT4, MOTOR2_PIN4);
+//    while(1)
+//    {
+//        test++;
+//        displayScrollText("SPIN");
+//    }
+
     displayScrollText("BDB");
     // All are triggered by the same port/pin.
     PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {TRIG_PORT, TRIG_PORT, TRIG_PORT, TRIG_PORT};
@@ -70,10 +85,11 @@ void main(void)
     displayScrollText("SPIN");
 
     while (1) {
-        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
-        //handle_uart_flags();
+        //uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
+        handle_uart_flags();
         //handle_sensor_distance();
     }
+
 
     //    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
 
