@@ -37,7 +37,7 @@ void main(void)
 
     // Initializations - see functions for more detail
     Init_GPIO();  //Sets all pins to output low as a default
-    Init_PWM();   //Sets up a PWM output
+    //Init_PWM();   //Sets up a PWM output
     Init_ADC();   //Sets up the ADC to sample
     Init_Clock(); //Sets up the necessary system clocks
     Init_UART();  //Sets up an echo over a COM port
@@ -70,7 +70,9 @@ void main(void)
     displayScrollText("SPIN");
 
     while (1) {
-        handle_uart_flags();
+        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
+        //handle_uart_flags();
+        //handle_sensor_distance();
     }
 
     //    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
@@ -80,8 +82,6 @@ void main(void)
     //        displayScrollText("GDD");
     //        ISR_routine(dist_sensors, NUM_DIST_SENSORS);
     //    }
-
-    sleep(10000);
 
     /* You can use the following code if you plan on only using interrupts
      * to handle all your system events since you don't need any infinite loop of code.
@@ -184,14 +184,14 @@ void Init_UART(void)
     //UCBRx = 6, UCBRFx = 8, UCBRSx = 17, UCOS16 = 1
     EUSCI_A_UART_initParam param = {0};
     param.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;
-    param.clockPrescalar = 6;
-    param.firstModReg = 8;
-    param.secondModReg = 17;
+    param.clockPrescalar = 8;
+    param.firstModReg = 0;
+    param.secondModReg = 214;
     param.parity = EUSCI_A_UART_NO_PARITY;
     param.msborLsbFirst = EUSCI_A_UART_LSB_FIRST;
     param.numberofStopBits = EUSCI_A_UART_ONE_STOP_BIT;
     param.uartMode = EUSCI_A_UART_MODE;
-    param.overSampling = 1;
+    param.overSampling = 0;
 
     if (STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A0_BASE, &param))
     {

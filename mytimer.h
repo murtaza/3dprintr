@@ -5,3 +5,5 @@
 #include "constants.h"
 
 void setup_timer_interrupts();
+void handle_sensor_distance();
+unsigned int read_uv();

@@ -16,6 +16,8 @@
 
 #define TIMER_PERIOD 4096
 
+volatile uint8_t read_uv_flag = 0;
+
 //--------------------------------  m a i n  -----------------------------------
 void setup_timer_interrupts(void)
 {
@@ -25,8 +27,8 @@ void setup_timer_interrupts(void)
     Timer_A_initUpModeParam param =
     {
         TIMER_A_CLOCKSOURCE_ACLK,               // ACLK clock source ~32.768kHz
-        TIMER_A_CLOCKSOURCE_DIVIDER_1,          // ACLK/?? = ??kHz
-        32,                                  // debounce period
+        TIMER_A_CLOCKSOURCE_DIVIDER_32,          // ACLK/?? = ??kHz
+        512,                                  // debounce period
         TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
         TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE ,    // Enable CCR0 interrupt
         TIMER_A_DO_CLEAR,                       // Clear value
@@ -35,6 +37,22 @@ void setup_timer_interrupts(void)
 
     Timer_A_initUpMode(TIMER_A0_BASE, &param);
 }
+
+void handle_sensor_distance() {
+    //if (!read_uv_flag) return;
+
+    //read_uv_flag = 0;
+    if ((read_uv() < 400)) {
+        showHex(1);
+    } else {
+        showHex(0);
+    }
+}
+
+unsigned int read_uv() {
+    return uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
+}
+
 
 //-------------------------  T I M E R A 0 _ I S R  ----------------------------
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
@@ -46,13 +64,7 @@ __attribute__((interrupt(TIMERA0_VECTOR)))
     void
     TIMERA0_ISR(void)
 {
-    if (uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN) < 400)
-    {
-        showHex(1);
-    }
-    else {
-        showHex(0);
-    }
+    read_uv_flag = 1;
 }
 /* This code contains fragments and sections subject to the following
  * copyright:

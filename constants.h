@@ -36,3 +36,18 @@ extern const PIN MOTOR1_PIN3;
 
 extern const PORT MOTOR1_PORT4;
 extern const PIN MOTOR1_PIN4;
+
+// MOTOR 2
+// 5.2, 5.0, 1.6, 1.7
+
+extern const PORT MOTOR2_PORT1;
+extern const PIN MOTOR2_PIN1;
+
+extern const PORT MOTOR2_PORT2;
+extern const PIN MOTOR2_PIN2;
+
+extern const PORT MOTOR2_PORT3;
+extern const PIN MOTOR2_PIN3;
+
+extern const PORT MOTOR2_PORT4;
+extern const PIN MOTOR2_PIN4;

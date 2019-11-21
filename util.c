@@ -19,6 +19,7 @@ void sleep(volatile uint32_t us)
 void printChar(char c)
 {
     EUSCI_A_UART_transmitData(EUSCI_A0_BASE, (uint8_t)c);
+    sleep(150);
 }
 
 void printString(char *string)

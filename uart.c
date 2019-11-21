@@ -13,6 +13,7 @@ volatile uint8_t curr_x;
 volatile uint8_t curr_y;
 
 volatile int num_points = 0;
+volatile point curr_pos = { 0, 0 };
 volatile point points[50];
 
 /* EUSCI A0 UART ISR - Echoes data back to PC host */
@@ -78,7 +79,7 @@ void store_point() {
     num_points++;
 
     point_finished = 0;
-    printPoints(curr_x, curr_y);
+    printPoint(p);
     parse_x = 1;
 }
 
@@ -86,10 +87,9 @@ void print_all_points() {
     printString("Here are your points\n\r");
 
     uint8_t i;
-    char dig_arr[10];
     for (i = 0; i < num_points; i++) {
-        printPoints(points[i].x, points[i].y);
-        sleep(10000);
+        printPoint(points[i]);
+        sleep(1500);
     }
 }
 
@@ -109,8 +109,8 @@ void handle_uart_flags() {
     }
 
     if (run_instructions) {
-        print_all_points();
-
+        //print_all_points();
+        execute_instructions();
         /* Reset */
         num_points = 0;
         run_instructions = 0;
@@ -119,17 +119,40 @@ void handle_uart_flags() {
 
 }
 
-void printPoints(uint8_t x, uint8_t y) {
+void execute_instructions() {
+    printString("Now executing instructions.\n\r");
+    printString("Current position is: \n\r");
+    printPoint(curr_pos);
+    uint8_t i;
+    for (i = 0; i < num_points; i++) {
+        if (points[i].x > curr_pos.x) {
+            move_x_motor(points[i].x - curr_pos.x, DIR_CLKWISE);
+        } else {
+            move_x_motor(curr_pos.x - points[i].x, DIR_COUNTER_CLKWISE);
+        }
+
+        if (points[i].y > curr_pos.y) {
+            move_y_motor(points[i].y - curr_pos.y, DIR_CLKWISE);
+        } else {
+            move_y_motor(curr_pos.y - points[i].y, DIR_COUNTER_CLKWISE);
+        }
+
+        curr_pos = points[i];
+        printPoint(curr_pos);
+    }
+}
+
+void printPoint(point p) {
     char dig_arr[10];
 
     printString("X=");
-    seperateDigits(dig_arr, x);
+    seperateDigits(dig_arr, p.x);
     printString(dig_arr);
 
     printChar(' ');
 
     printString("Y=");
-    seperateDigits(dig_arr, y);
+    seperateDigits(dig_arr, p.y);
     printString(dig_arr);
     printString("\n\r");
 }

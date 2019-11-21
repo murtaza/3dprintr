@@ -109,9 +109,9 @@ unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
         cycles += 3;
         curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     }
-    // displayScrollText("CYCLES");
-    // showHex(cycles);
-    // __delay_cycles(10000000);
+    displayScrollText("CYCLES");
+    showHex(cycles);
+    __delay_cycles(10000000);
     return cycles;
 }
 
