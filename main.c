@@ -67,7 +67,8 @@ void main(void)
     __enable_interrupt();
 
     displayScrollText("BDB");
-
+    // Set the LED high on PIN.
+    GPIO_setAsOutputPin(LED2_PORT, LED2_PIN);
     run_dont_stop();
 
     /* You can use the following code if you plan on only using interrupts

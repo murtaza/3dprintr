@@ -11,11 +11,14 @@
 #define DIR_COUNTER_CLKWISE 1
 #define DIR_CLKWISE 0
 
+#define LED2_PORT GPIO_PORT_P4
+#define LED2_PIN GPIO_PIN0
+
 void run_dont_stop();
 int parse_instructions();
 void execute_instructions();
 void printPoint(point p);
-uint8_t stringToInt(char * string);
+uint8_t stringToInt(char *string);
 void seperateDigits(char *arr, uint8_t num);
 uint8_t countDigits(int num);
 

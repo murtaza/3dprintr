@@ -88,6 +88,8 @@ void run_dont_stop()
                 printString("Resetting position to (0, 0) \r\n");
                 reset_to_zero();
             }
+            // Turn off the LED that might be on.
+            GPIO_setOutputLowOnPin(LED2_PORT, LED2_PIN);
             printString("Please enter your points in format: X Y \r\n");
             state = NOT_DONE;
             break;
@@ -172,6 +174,7 @@ void execute_instructions()
             // +x
             if (!move_x_motor(points[i].x - curr_pos.x, DIR_CLKWISE, X_PLUS))
             {
+                GPIO_setOutputHighOnPin(LED2_PORT, LED2_PIN);
                 printString("Abort: Edge detected (+X) \r\n");
                 break;
             }
@@ -181,6 +184,7 @@ void execute_instructions()
             // -x
             if (!move_x_motor(curr_pos.x - points[i].x, DIR_COUNTER_CLKWISE, X_MINUS))
             {
+                GPIO_setOutputHighOnPin(LED2_PORT, LED2_PIN);
                 printString("Abort: Edge detected (-X) \r\n");
                 break;
             }
@@ -191,6 +195,7 @@ void execute_instructions()
             // +y
             if (!move_y_motor(points[i].y - curr_pos.y, DIR_CLKWISE, Y_PLUS))
             {
+                GPIO_setOutputHighOnPin(LED2_PORT, LED2_PIN);
                 printString("Abort: Edge detected (+Y) \r\n");
                 break;
             }
@@ -200,6 +205,7 @@ void execute_instructions()
             // -y
             if (!move_y_motor(curr_pos.y - points[i].y, DIR_COUNTER_CLKWISE, Y_MINUS))
             {
+                GPIO_setOutputHighOnPin(LED2_PORT, LED2_PIN);
                 printString("Abort: Edge detected (-Y) \r\n");
                 break;
             }
