@@ -1,0 +1,18 @@
+- Remove trailing space when giving 
+directions
+- Add new line after termination char
+- If any error occurs in parsing, 
+just retry
+
+- Determine direction of current movement:
+{ +x, -x, +y, -y}
+
+- Poll correct sensor during movement.
+- Stop motor if movement invalid.
+reset to 0.
+- if all movements are succesful also 
+reset to 0
+
+-Reset to 0:
+Set motors to 0,0, 
+and ask for inputs again.

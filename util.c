@@ -1,8 +1,5 @@
 #include "util.h"
 
-typedef uint8_t PORT;
-typedef uint16_t PIN;
-
 // Scuffed way to sleep.
 // Sleeps the program for n us.
 // Max value is: 268435455 approximately 268 seconds.

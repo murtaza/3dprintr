@@ -1,5 +1,8 @@
 #include "distance.h"
 
+
+
+
 // Assumes setup has been called for the distance_sensors.
 void uv_ISR_routine(distance_sensor *sensors, int num_sensors)
 {
@@ -64,7 +67,7 @@ void _trigger_sensor(distance_sensor *ds)
     // use timer compare feature to modify pin (once).
     GPIO_setOutputHighOnPin(ds->trigger_port, ds->trigger_pin);
     // sleep for 10 us.
-    sleep(10);
+    __delay_cycles(16);
     GPIO_setOutputLowOnPin(ds->trigger_port, ds->trigger_pin);
 }
 
@@ -76,25 +79,21 @@ void _setup_sensor(distance_sensor *ds)
 
     // Ensure Trigger is set to low, and wait a bit.
     GPIO_setOutputLowOnPin(ds->trigger_port, ds->trigger_pin);
-    sleep(100);
-    displayScrollText("SS");
+    __delay_cycles(16);
 }
 
-unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
+unsigned int uv_test(uint8_t trig_port, uint16_t trig_pin, uint8_t echo_port, uint16_t echo_pin)
 {
     GPIO_setAsInputPin(echo_port, echo_pin);
     GPIO_setAsOutputPin(trig_port, trig_pin);
-    volatile uint8_t trig_count = 0;
-    while (trig_count < 3) {
-        // Ensure Trigger is set to low, and wait a bit.
-        GPIO_setOutputLowOnPin(trig_port, trig_pin);
-        __delay_cycles(8);
 
-        GPIO_setOutputHighOnPin(trig_port, trig_pin);
-        __delay_cycles(8);
-        GPIO_setOutputLowOnPin(trig_port, trig_pin);
-        trig_count++;
-    }
+    // Ensure Trigger is set to low, and wait a bit.
+    GPIO_setOutputLowOnPin(trig_port, trig_pin);
+    __delay_cycles(16);
+
+    GPIO_setOutputHighOnPin(trig_port, trig_pin);
+    __delay_cycles(16);
+    GPIO_setOutputLowOnPin(trig_port, trig_pin);
 
     volatile int curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     unsigned int cycles = 0;
@@ -106,11 +105,12 @@ unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin)
     // Now it's high! Start counting cycles.
     while (curr_status == 1)
     {
-        cycles += 3;
+        cycles++;
         curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     }
     displayScrollText("CYCLES");
     showHex(cycles);
+    __delay_cycles(5000000);
     return cycles;
 }
 

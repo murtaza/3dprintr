@@ -6,6 +6,7 @@ volatile uint8_t char_count = 0;
 volatile int run_instructions = 0;
 volatile int point_finished = 0;
 volatile int direction_value = 0;
+volatile int direction_count = 0;
 volatile int reset = 1;
 
 volatile int parse_x = 1;
@@ -31,25 +32,46 @@ void EUSCIA0_ISR(void)
         EUSCI_A_UART_transmitData(EUSCI_A0_BASE, receiveData);
         if (receiveData == 13)
         {
+            // Enter char
             point_finished = 1;
         }
         else if (receiveData == 71)
         {
+            // Termination Char
             run_instructions = 1;
         }
         else if (receiveData == 32)
         {
+            // Space char
             direction_value = 1;
         }
         else
         {
+
             instructions[char_count] = (char)receiveData;
             char_count++;
         }
     }
 }
 
-void store_direction_value() {
+int is_valid(char *instr, uint8_t len){
+    uint8_t i = 0;
+    for (i = 0; i < len; i++){
+        if (instr[i] <= '0' || instr[i] >= '9') {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int store_direction_value() {
+
+    uint8_t valid_instruction;
+
+    if (!is_valid(instructions, char_count)) {
+        return 0;
+    }
+
     if (parse_x)
     {
          curr_x = 0;
@@ -70,7 +92,7 @@ void store_direction_value() {
          char_count = 0;
          parse_x = 1;
      }
-     direction_value = 0;
+     return 1;
 }
 
 void store_point() {
@@ -93,23 +115,38 @@ void print_all_points() {
     }
 }
 
-void handle_uart_flags() {
+void handle_uart
 
+void handle_uart_flags() {
     if (reset) {
         printString("Type in point in for x y, space separated, press enter for new point or type G for GO\n\r");
         reset = 0;
     }
 
     if (direction_value) {
-        store_direction_value();
+        if (!store_direction_value()) {
+            printString("Error: Invalid Point, please re-enter x y \n\r")
+            char_count = 0;
+            parse_x = 1;
+            direction_count = 0;
+        }
+        direction_value = 0;
+        direction_count++;
     }
 
     if (point_finished) {
+        if (direction_count == 2) {
+            store_point();
+        } else {
+            direction_count = 0;
+            printString("Error: re-enter \n\r")
+        }
         store_point();
     }
 
     if (run_instructions) {
         //print_all_points();
+        printString("\n\r");
         execute_instructions();
         /* Reset */
         num_points = 0;

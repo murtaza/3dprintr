@@ -1,5 +1,22 @@
 #include "motor.h"
 
+void TEST_set_all_motor_high(){
+    int test = 0;
+    GPIO_setOutputHighOnPin(MOTOR1_PORT1, MOTOR1_PIN1);
+    GPIO_setOutputHighOnPin(MOTOR1_PORT2, MOTOR1_PIN2);
+    GPIO_setOutputHighOnPin(MOTOR1_PORT3, MOTOR1_PIN3);
+    GPIO_setOutputHighOnPin(MOTOR1_PORT4, MOTOR1_PIN4);
+    GPIO_setOutputHighOnPin(MOTOR2_PORT1, MOTOR2_PIN1);
+    GPIO_setOutputHighOnPin(MOTOR2_PORT2, MOTOR2_PIN2);
+    GPIO_setOutputHighOnPin(MOTOR2_PORT3, MOTOR2_PIN3);
+    GPIO_setOutputHighOnPin(MOTOR2_PORT4, MOTOR2_PIN4);
+    while(1)
+    {
+        test++;
+        displayScrollText("SPIN");
+    }
+}
+
 void move_x_motor(uint8_t quarterRotations, uint8_t dir)
 {
     const int sleep_time = 12;

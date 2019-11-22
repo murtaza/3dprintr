@@ -18,6 +18,16 @@ void blink_led()
     displayScrollText("LED DONE");
 }
 
+void TEST_all_sensor_high(){
+    GPIO_setOutputHighOnPin(TRIG_PORT, TRIG_PIN);
+
+    GPIO_setOutputHighOnPin(U_SENSOR1_PORT, U_SENSOR1_PIN);
+    GPIO_setOutputHighOnPin(U_SENSOR2_PORT, U_SENSOR2_PIN);
+    GPIO_setOutputHighOnPin(U_SENSOR3_PORT, U_SENSOR3_PIN);
+    GPIO_setOutputHighOnPin(U_SENSOR4_PORT, U_SENSOR4_PIN);
+}
+
+
 void main(void)
 {
     /*
@@ -37,8 +47,8 @@ void main(void)
 
     // Initializations - see functions for more detail
     Init_GPIO();  //Sets all pins to output low as a default
-    //Init_PWM();   //Sets up a PWM output
-    Init_ADC();   //Sets up the ADC to sample
+//    Init_PWM();   //Sets up a PWM output
+//    Init_ADC();   //Sets up the ADC to sample
     Init_Clock(); //Sets up the necessary system clocks
     Init_UART();  //Sets up an echo over a COM port
     Init_LCD();   //Sets up the LaunchPad LCD display
@@ -56,38 +66,27 @@ void main(void)
     //All done initializations - turn interrupts back on.
     __enable_interrupt();
 
-//    int test = 0;
-//    GPIO_setOutputHighOnPin(MOTOR1_PORT1, MOTOR1_PIN1);
-//    GPIO_setOutputHighOnPin(MOTOR1_PORT2, MOTOR1_PIN2);
-//    GPIO_setOutputHighOnPin(MOTOR1_PORT3, MOTOR1_PIN3);
-//    GPIO_setOutputHighOnPin(MOTOR1_PORT4, MOTOR1_PIN4);
-//    GPIO_setOutputHighOnPin(MOTOR2_PORT1, MOTOR2_PIN1);
-//    GPIO_setOutputHighOnPin(MOTOR2_PORT2, MOTOR2_PIN2);
-//    GPIO_setOutputHighOnPin(MOTOR2_PORT3, MOTOR2_PIN3);
-//    GPIO_setOutputHighOnPin(MOTOR2_PORT4, MOTOR2_PIN4);
-//    while(1)
-//    {
-//        test++;
-//        displayScrollText("SPIN");
-//    }
-
     displayScrollText("BDB");
-    // All are triggered by the same port/pin.
-    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {TRIG_PORT, TRIG_PORT, TRIG_PORT, TRIG_PORT};
-    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {TRIG_PIN, TRIG_PIN, TRIG_PIN, TRIG_PIN};
-
-    // 1.7, 1.6, 5.0, 5.2
-    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {U_SENSOR1_PORT, U_SENSOR2_PORT, U_SENSOR3_PORT, U_SENSOR4_PORT};
-    PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
-
-    distance_sensor dist_sensors[NUM_DIST_SENSORS];
+//    // All are triggered by the same port/pin.
+//    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {TRIG_PORT, TRIG_PORT, TRIG_PORT, TRIG_PORT};
+//    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {TRIG_PIN, TRIG_PIN, TRIG_PIN, TRIG_PIN};
+//
+//    // 1.7, 1.6, 5.0, 5.2
+//    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {U_SENSOR1_PORT, U_SENSOR2_PORT, U_SENSOR3_PORT, U_SENSOR4_PORT};
+//    PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
+//
+//    distance_sensor dist_sensors[NUM_DIST_SENSORS];
 //    setup_timer_interrupts();
-    displayScrollText("SPIN");
 
+//    TEST_all_sensor_high();
     while (1) {
-        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
-//        handle_uart_flags();
-        //handle_sensor_distance();
+        displayScrollText("SENS1");
+        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR3_PORT, U_SENSOR3_PIN);
+//
+//        displayScrollText("SENS2");
+//        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
+
+        handle_uart_flags();
     }
 
 

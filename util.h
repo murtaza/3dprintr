@@ -3,7 +3,6 @@
 #include <string.h>
 #include "driverlib/driverlib.h"
 
-#pragma once
 typedef uint8_t PORT;
 typedef uint16_t PIN;
 
