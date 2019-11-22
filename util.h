@@ -6,20 +6,20 @@
 typedef uint8_t PORT;
 typedef uint16_t PIN;
 
-
-typedef enum MOVE_DIRECTION {
+typedef enum MOVE_DIRECTION
+{
     X_PLUS,
     X_MINUS,
     Y_PLUS,
-    Y_MINUS
+    Y_MINUS,
+    NO_CHECK,
 } MOVE_DIRECTION;
 
-typedef struct {
+typedef struct
+{
     uint8_t x;
     uint8_t y;
 } point;
-
-
 
 extern volatile point curr_pos;
 

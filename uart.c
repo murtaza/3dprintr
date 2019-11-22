@@ -70,7 +70,12 @@ void print_all_points()
         sleep(1500);
     }
 }
-
+void reset_to_zero()
+{
+    // Reset X and Y
+    move_x_motor(curr_pos.x, DIR_COUNTER_CLKWISE, NO_CHECK);
+    move_y_motor(curr_pos.y, DIR_COUNTER_CLKWISE, NO_CHECK);
+}
 void run_dont_stop()
 {
     while (1)
@@ -78,13 +83,18 @@ void run_dont_stop()
         switch (state)
         {
         case INIT:
-            printString("Please enter your points (X Y): \r\n");
+            if (curr_pos.x > 0 || curr_pos.y > 0)
+            {
+                printString("Resetting position to (0, 0) \r\n");
+                reset_to_zero();
+            }
+            printString("Please enter your points in format: X Y \r\n");
             state = NOT_DONE;
             break;
         case DONE:
             if (parse_instructions() < 0)
             {
-                printString("Error: Invalid points given. Enter X Y \r\n");
+                printString("Error: Invalid points given. Retry with format: X Y \r\n");
             }
             char_count = 0;
             state = NOT_DONE;

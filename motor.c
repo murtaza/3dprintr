@@ -20,14 +20,24 @@ void TEST_set_all_motor_high()
 
 int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirection)
 {
+    if (quarterRotations == 0)
+    {
+        return 1;
+    }
     const int sleep_time = 12;
 
     const int COUNTER_MAX = 138; // 500 is 90% of a rotation.
     volatile int counter = 0;
     volatile int step = 0;
 
-    printString("MOTORS X MOVING \r\n");
-
+    if (dir == DIR_CLKWISE)
+    {
+        printString("Moving in +X direction\r\n");
+    }
+    else
+    {
+        printString("Moving in -X direction\r\n");
+    }
     int i;
     for (i = 0; i < quarterRotations; i++)
     {
@@ -134,13 +144,23 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
 
 int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirection)
 {
+    if (quarterRotations == 0)
+    {
+        return 1;
+    }
     const int sleep_time = 12;
 
     const int COUNTER_MAX = 138; // 500 is 90% of a rotation.
     volatile int counter = 0;
     volatile int step = 0;
-
-    printString("MOTORS Y MOVING \r\n");
+    if (dir == DIR_CLKWISE)
+    {
+        printString("Moving in +Y direction\r\n");
+    }
+    else
+    {
+        printString("Moving in -Y direction\r\n");
+    }
 
     int i;
     for (i = 0; i < quarterRotations; i++)
