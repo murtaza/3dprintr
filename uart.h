@@ -1,6 +1,4 @@
-#ifndef UART_H
-#define UART_H
-
+#pragma once
 #include "driverlib/driverlib.h"
 #include "util.h"
 #include "motor.h"
@@ -28,5 +26,4 @@ void printPoint(point p);
 uint8_t stringToInt(char *string);
 void seperateDigits(char *arr, uint8_t num);
 uint8_t countDigits(int num);
-
-#endif
+int show_two_digits_to_LCD(int num, int pos, int pos_array[6]);

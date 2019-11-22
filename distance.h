@@ -6,7 +6,6 @@
 #include "hal_LCD.h"
 #include "constants.h"
 
-
 typedef struct distance_sensor
 {
 
@@ -24,7 +23,7 @@ typedef struct distance_sensor
 
 unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin);
 
-void itoa(uint16_t x);
+void myitoa(uint16_t x);
 
 // Trigger sends a 3v3 (should be 5V) pulse to the the trigger pin for 10us
 void _trigger_sensor(distance_sensor *ds);

@@ -36,7 +36,7 @@ void setup_sensors(distance_sensor *sensors, PORT *trigger_ports, PIN *trigger_p
 //    return
 //}
 
-void itoa(uint16_t x)
+void myitoa(uint16_t x)
 {
     // 16 bit integer
     uint16_t temp;
@@ -171,7 +171,7 @@ void read_distance(distance_sensor *ds)
             curr_status = GPIO_getInputPinValue(ds->echo_port, ds->echo_pin);
         }
     }
-    itoa(wait_time);
+    myitoa(wait_time);
     displayScrollText("UV SENSOR DONE");
 }
 

@@ -238,8 +238,75 @@ void printPoint(point p)
     printString("\n\r");
 }
 
+void printCurrPosToLCD()
+{
+    clearLCD();
+    int pos_array[6] = {4, 6, 8, 10, 2, 18};
+    int pos = 0;
+    showChar('X', pos_array[pos]);
+    pos = show_two_digits_to_LCD(curr_pos.x, pos, pos_array);
+
+    showChar('Y', pos_array[pos]);
+    pos = show_two_digits_to_LCD(curr_pos.y, pos, pos_array);
+}
+
+int show_two_digits_to_LCD(int num, int pos, int pos_array[6])
+{
+    int initial_pos = pos;
+    int nums[2];
+
+    nums[1] = num % 10;
+    num /= 10;
+    nums[0] = num % 10;
+    int i = 0;
+    // Shows UPTO 2 digits to the screen.
+    while (num && pos <= initial_pos + 1)
+    {
+        switch (nums[i])
+        {
+        case 0:
+            showChar('0', pos_array[pos]);
+            break;
+        case 1:
+            showChar('1', pos_array[pos]);
+            break;
+        case 2:
+            showChar('2', pos_array[pos]);
+            break;
+        case 3:
+            showChar('3', pos_array[pos]);
+            break;
+        case 4:
+            showChar('4', pos_array[pos]);
+            break;
+        case 5:
+            showChar('5', pos_array[pos]);
+            break;
+        case 6:
+            showChar('6', pos_array[pos]);
+            break;
+        case 7:
+            showChar('7', pos_array[pos]);
+            break;
+        case 8:
+            showChar('8', pos_array[pos]);
+            break;
+        case 9:
+            showChar('9', pos_array[pos]);
+            break;
+        }
+        i++;
+        pos++;
+    }
+    return pos;
+}
+
 void printCurrPos(point p)
 {
+
+    // First print to LCD:
+//    printCurrPosToLCD();
+
     char dig_arr[10];
     printString("CurrPos: ");
 
