@@ -50,7 +50,7 @@ void EUSCIA0_ISR(void)
 int is_valid(char *point, uint8_t len){
     uint8_t i = 0;
     while(point[i] != '\0') {
-        if (point[i] <= '0' || point[i] >= '9') {
+        if (point[i] < '0' || point[i] > '9') {
             return 0;
         }
         i++;
@@ -128,7 +128,6 @@ int parse_instructions(){
     y_len++;
 
     if (!is_valid(y, y_len)){
-
         return -1;
     }
 
@@ -136,6 +135,7 @@ int parse_instructions(){
     points[num_points].x = atoi(x);
     printPoint(points[num_points]);
     num_points++;
+    return 0;
 }
 
 void execute_instructions() {

@@ -27,6 +27,7 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
 
     int i;
     for (i = 0; i < quarterRotations; i++) {
+        counter = 0;
         while (counter <= COUNTER_MAX)
         {
             switch (step) {
@@ -98,7 +99,7 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
             counter++;
         }
 
-        if (dir) {
+        if (dir == DIR_CLKWISE) {
             curr_pos.x += 1;
         } else {
             curr_pos.x -= 1;
@@ -108,7 +109,7 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
         }
     }
 
-    displayScrollText("MOTORS X DONE");
+    printString("MOTORS X DONE\r\n");
     return 1;
 }
 
@@ -122,6 +123,7 @@ int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
 
     int i;
     for (i = 0; i < quarterRotations; i++) {
+        counter = 0;
         while (counter <= COUNTER_MAX)
         {
             switch (step) {
@@ -192,16 +194,16 @@ int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
 
             counter++;
         }
-        if (dir) {
-            curr_pos.x += 1;
+        if (dir == DIR_CLKWISE) {
+            curr_pos.y += 1;
         } else {
-            curr_pos.x -= 1;
+            curr_pos.y -= 1;
         }
         if (edge_detect(moveDirection)){
             printPoint(curr_pos);
         }
 
     }
-    displayScrollText("MOTORS Y DONE");
+    printString("MOTORS Y DONE\r\n");
     return 1;
 }

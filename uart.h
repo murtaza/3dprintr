@@ -12,6 +12,7 @@
 #define DIR_CLKWISE 0
 
 void run_dont_stop();
+int parse_instructions();
 void execute_instructions();
 void printPoint(point p);
 uint8_t stringToInt(char * string);

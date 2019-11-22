@@ -105,9 +105,7 @@ unsigned int uv_test(uint8_t trig_port, uint16_t trig_pin, uint8_t echo_port, ui
         cycles++;
         curr_status = GPIO_getInputPinValue(echo_port, echo_pin);
     }
-    displayScrollText("CYCLES");
     showHex(cycles);
-    __delay_cycles(5000000);
     return cycles;
 }
 
@@ -193,6 +191,7 @@ int edge_detect(MOVE_DIRECTION md){
         ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
         break;
     }
+    return 1;
     return ret > 400;
 }
 
