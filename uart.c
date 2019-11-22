@@ -3,19 +3,20 @@
 volatile char instructions[50];
 volatile uint8_t char_count = 0;
 
-volatile int run_instructions = 0;
-volatile int point_finished = 0;
-volatile int direction_value = 0;
-volatile int direction_count = 0;
-volatile int reset = 1;
 
-volatile int parse_x = 1;
-volatile uint8_t curr_x;
-volatile uint8_t curr_y;
-
-volatile int num_points = 0;
-volatile point curr_pos = { 0, 0 };
 volatile point points[50];
+volatile int num_points = 0;
+
+
+typedef enum State {
+    INIT,
+    NOT_DONE,
+    DONE,
+    EXECUTE,
+} State;
+
+
+State state = INIT;
 
 /* EUSCI A0 UART ISR - Echoes data back to PC host */
 #pragma vector=USCI_A0_VECTOR
@@ -33,77 +34,30 @@ void EUSCIA0_ISR(void)
         if (receiveData == 13)
         {
             // Enter char
-            point_finished = 1;
+            state = DONE;
         }
-        else if (receiveData == 71)
-        {
-            // Termination Char
-            run_instructions = 1;
-        }
-        else if (receiveData == 32)
-        {
-            // Space char
-            direction_value = 1;
+        else if (receiveData == 71){
+            state = EXECUTE;
         }
         else
         {
-
             instructions[char_count] = (char)receiveData;
             char_count++;
         }
     }
 }
 
-int is_valid(char *instr, uint8_t len){
+int is_valid(char *point, uint8_t len){
     uint8_t i = 0;
-    for (i = 0; i < len; i++){
-        if (instr[i] <= '0' || instr[i] >= '9') {
+    while(point[i] != '\0') {
+        if (point[i] <= '0' || point[i] >= '9') {
             return 0;
         }
+        i++;
     }
     return 1;
 }
 
-int store_direction_value() {
-
-    uint8_t valid_instruction;
-
-    if (!is_valid(instructions, char_count)) {
-        return 0;
-    }
-
-    if (parse_x)
-    {
-         curr_x = 0;
-         instructions[char_count] = '\0';
-         uint8_t value = stringToInt(instructions);
-         curr_x = value;
-
-         char_count = 0;
-         parse_x = 0;
-     }
-     else
-     {
-         curr_y = 0;
-         instructions[char_count] = '\0';
-         uint8_t value = stringToInt(instructions);
-         curr_y = value;
-
-         char_count = 0;
-         parse_x = 1;
-     }
-     return 1;
-}
-
-void store_point() {
-    point p = { curr_x, curr_y };
-    points[num_points] = p;
-    num_points++;
-
-    point_finished = 0;
-    printPoint(p);
-    parse_x = 1;
-}
 
 void print_all_points() {
     printString("Here are your points\n\r");
@@ -115,45 +69,73 @@ void print_all_points() {
     }
 }
 
-void handle_uart
-
-void handle_uart_flags() {
-    if (reset) {
-        printString("Type in point in for x y, space separated, press enter for new point or type G for GO\n\r");
-        reset = 0;
-    }
-
-    if (direction_value) {
-        if (!store_direction_value()) {
-            printString("Error: Invalid Point, please re-enter x y \n\r")
+void run_dont_stop(){
+    while(1){
+        switch(state) {
+        case INIT:
+            printString("Please enter your points: \r\n");
+            state = NOT_DONE;
+            break;
+        case DONE:
+            if (parse_instructions() < 0 ) {
+                printString("Error: Invalid points given. Enter X Y \r\n");
+            }
             char_count = 0;
-            parse_x = 1;
-            direction_count = 0;
+            state = NOT_DONE;
+            break;
+        case NOT_DONE:
+            break;
+        case EXECUTE:
+            print_all_points();
+            execute_instructions();
+            state = INIT;
+            num_points = 0;
+            break;
+        default:
+            // stuff is on fire.
+            printString("Error: Terrible\n");
         }
-        direction_value = 0;
-        direction_count++;
+    }
+}
+
+int parse_instructions(){
+
+    uint8_t i = 0;
+    char x[10];
+    char y[10];
+    int x_len = 0;
+    int y_len = 0;
+    // Get x
+    while(instructions[i] != ' ') {
+        x[x_len] = instructions[i];
+        i++;
+        x_len++;
+    }
+    x[x_len] = '\0';
+    x_len++;
+    if (!is_valid(x, x_len)) {
+        return -1;
     }
 
-    if (point_finished) {
-        if (direction_count == 2) {
-            store_point();
-        } else {
-            direction_count = 0;
-            printString("Error: re-enter \n\r")
-        }
-        store_point();
+    // Get y
+    i++;
+    while ((i < char_count) && (instructions[i] != ' ')) {
+        y[y_len] = instructions[i];
+        y_len++;
+        i++;
+    }
+    y[y_len] =  '\0';
+    y_len++;
+
+    if (!is_valid(y, y_len)){
+
+        return -1;
     }
 
-    if (run_instructions) {
-        //print_all_points();
-        printString("\n\r");
-        execute_instructions();
-        /* Reset */
-        num_points = 0;
-        run_instructions = 0;
-        reset = 1;
-    }
-
+    points[num_points].y = atoi(y);
+    points[num_points].x = atoi(x);
+    printPoint(points[num_points]);
+    num_points++;
 }
 
 void execute_instructions() {
@@ -163,19 +145,32 @@ void execute_instructions() {
     uint8_t i;
     for (i = 0; i < num_points; i++) {
         if (points[i].x > curr_pos.x) {
-            move_x_motor(points[i].x - curr_pos.x, DIR_CLKWISE);
+            // +x
+            if (!move_x_motor(points[i].x - curr_pos.x, DIR_CLKWISE, X_PLUS)){
+                printString("Edge detected (+X)");
+                break;
+            }
         } else {
-            move_x_motor(curr_pos.x - points[i].x, DIR_COUNTER_CLKWISE);
+            // -x
+            if(!move_x_motor(curr_pos.x - points[i].x, DIR_COUNTER_CLKWISE, X_MINUS)){
+                printString("Edge detected (-X)");
+                break;
+            }
         }
 
         if (points[i].y > curr_pos.y) {
-            move_y_motor(points[i].y - curr_pos.y, DIR_CLKWISE);
+            // +y
+            if (!move_y_motor(points[i].y - curr_pos.y, DIR_CLKWISE, Y_PLUS)){
+                printString("Edge detected (+Y)");
+                break;
+            }
         } else {
-            move_y_motor(curr_pos.y - points[i].y, DIR_COUNTER_CLKWISE);
+            // -y
+            if(!move_y_motor(curr_pos.y - points[i].y, DIR_COUNTER_CLKWISE, Y_MINUS)){
+                printString("Edge detected (-Y)");
+                break;
+            }
         }
-
-        curr_pos = points[i];
-        printPoint(curr_pos);
     }
 }
 

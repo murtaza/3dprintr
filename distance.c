@@ -1,8 +1,5 @@
 #include "distance.h"
 
-
-
-
 // Assumes setup has been called for the distance_sensors.
 void uv_ISR_routine(distance_sensor *sensors, int num_sensors)
 {
@@ -179,3 +176,23 @@ void read_distance(distance_sensor *ds)
     itoa(wait_time);
     displayScrollText("UV SENSOR DONE");
 }
+
+int edge_detect(MOVE_DIRECTION md){
+    int ret = 0;
+    switch(md){
+    case X_PLUS:
+        ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
+        break;
+    case X_MINUS:
+        ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR2_PORT, U_SENSOR2_PIN);
+        break;
+    case Y_PLUS:
+        ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR3_PORT, U_SENSOR3_PIN);
+        break;
+    case Y_MINUS:
+        ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
+        break;
+    }
+    return ret > 400;
+}
+

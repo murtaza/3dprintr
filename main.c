@@ -67,36 +67,8 @@ void main(void)
     __enable_interrupt();
 
     displayScrollText("BDB");
-//    // All are triggered by the same port/pin.
-//    PORT TRIGGER_PORTS[NUM_DIST_SENSORS] = {TRIG_PORT, TRIG_PORT, TRIG_PORT, TRIG_PORT};
-//    PIN TRIGGER_PINS[NUM_DIST_SENSORS] = {TRIG_PIN, TRIG_PIN, TRIG_PIN, TRIG_PIN};
-//
-//    // 1.7, 1.6, 5.0, 5.2
-//    PORT ECHO_PORTS[NUM_DIST_SENSORS] = {U_SENSOR1_PORT, U_SENSOR2_PORT, U_SENSOR3_PORT, U_SENSOR4_PORT};
-//    PIN ECHO_PINS[NUM_DIST_SENSORS] = {U_SENSOR1_PIN, U_SENSOR2_PIN, U_SENSOR3_PIN, U_SENSOR4_PIN};
-//
-//    distance_sensor dist_sensors[NUM_DIST_SENSORS];
-//    setup_timer_interrupts();
 
-//    TEST_all_sensor_high();
-    while (1) {
-        displayScrollText("SENS1");
-        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR3_PORT, U_SENSOR3_PIN);
-//
-//        displayScrollText("SENS2");
-//        uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
-
-        handle_uart_flags();
-    }
-
-
-    //    setup_sensors(dist_sensors, TRIGGER_PORTS, TRIGGER_PINS, ECHO_PORTS, ECHO_PINS, NUM_DIST_SENSORS);
-
-    //    while (1)
-    //    {
-    //        displayScrollText("GDD");
-    //        ISR_routine(dist_sensors, NUM_DIST_SENSORS);
-    //    }
+    run_dont_stop();
 
     /* You can use the following code if you plan on only using interrupts
      * to handle all your system events since you don't need any infinite loop of code.

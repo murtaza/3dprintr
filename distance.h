@@ -4,6 +4,8 @@
 #include "util.h"
 #include "driverlib/driverlib.h"
 #include "hal_LCD.h"
+#include "constants.h"
+
 
 typedef struct distance_sensor
 {
@@ -18,7 +20,7 @@ typedef struct distance_sensor
 
 // Eventually will run on an interrupt. Not sure how arguments will be passed then.
 // MF TODO: Run this on an interrupt.
-void uv_ISR_routine(distance_sensor *sensors, int num_sensors);
+//void uv_ISR_routine(distance_sensor *sensors, int num_sensors);
 
 unsigned int uv_test(PORT trig_port, PIN trig_pin, PORT echo_port, PIN echo_pin);
 
@@ -38,3 +40,6 @@ void read_distance_v2(distance_sensor *ds);
 // Reads the distance given a distance_sensor.
 // Assumes the user has setup the sensor.
 void read_distance(distance_sensor *ds);
+
+// Checks if an edge was detected based on direction.
+int edge_detect(MOVE_DIRECTION md);

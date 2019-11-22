@@ -1,5 +1,9 @@
 #include "util.h"
 
+
+// Used by motor.h and uart.h
+volatile point curr_pos = { 0, 0 };
+
 // Scuffed way to sleep.
 // Sleeps the program for n us.
 // Max value is: 268435455 approximately 268 seconds.

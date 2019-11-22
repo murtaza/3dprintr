@@ -11,12 +11,7 @@
 #define DIR_COUNTER_CLKWISE 1
 #define DIR_CLKWISE 0
 
-typedef struct {
-    uint8_t x;
-    uint8_t y;
-} point;
-
-void handle_uart_flags();
+void run_dont_stop();
 void execute_instructions();
 void printPoint(point p);
 uint8_t stringToInt(char * string);
