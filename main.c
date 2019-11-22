@@ -69,6 +69,9 @@ void main(void)
     displayScrollText("BDB");
     // Set the LED high on PIN.
     GPIO_setAsOutputPin(LED2_PORT, LED2_PIN);
+
+    GPIO_setAsInputPinWithPullUpResistor(SW1_PORT, SW1_PIN);
+    GPIO_setAsInputPinWithPullUpResistor(SW2_PORT, SW2_PIN);
     run_dont_stop();
 
     /* You can use the following code if you plan on only using interrupts

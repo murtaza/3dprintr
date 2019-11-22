@@ -76,6 +76,14 @@ void reset_to_zero()
     move_x_motor(curr_pos.x, DIR_COUNTER_CLKWISE, NO_CHECK);
     move_y_motor(curr_pos.y, DIR_COUNTER_CLKWISE, NO_CHECK);
 }
+
+// Spin while the PB is not pressed
+void wait_on_pb()
+{
+    while (GPIO_getInputPinValue(SW1_PORT, SW1_PIN) == 1)
+        ;
+}
+
 void run_dont_stop()
 {
     while (1)
@@ -104,6 +112,7 @@ void run_dont_stop()
         case NOT_DONE:
             break;
         case EXECUTE:
+            wait_on_pb();
             print_all_points();
             execute_instructions();
             state = INIT;
