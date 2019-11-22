@@ -42,4 +42,4 @@ void read_distance_v2(distance_sensor *ds);
 void read_distance(distance_sensor *ds);
 
 // Checks if an edge was detected based on direction.
-int edge_detect(MOVE_DIRECTION md);
+unsigned int edge_detect(MOVE_DIRECTION md);

@@ -175,8 +175,8 @@ void read_distance(distance_sensor *ds)
     displayScrollText("UV SENSOR DONE");
 }
 
-int edge_detect(MOVE_DIRECTION md){
-    int ret = 0;
+unsigned int edge_detect(MOVE_DIRECTION md){
+    unsigned int ret = 0;
     switch(md){
     case X_PLUS:
         ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR1_PORT, U_SENSOR1_PIN);
@@ -191,7 +191,7 @@ int edge_detect(MOVE_DIRECTION md){
         ret = uv_test(TRIG_PORT, TRIG_PIN, U_SENSOR4_PORT, U_SENSOR4_PIN);
         break;
     }
-    return 1;
-    return ret > 400;
+    showHex((int)ret);
+    return ret < 5;
 }
 

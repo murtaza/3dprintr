@@ -25,8 +25,16 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
     volatile int counter = 0;
     volatile int step = 0;
 
+    printString("MOTORS X MOVING \r\n");
+
     int i;
     for (i = 0; i < quarterRotations; i++) {
+
+        if (edge_detect(moveDirection)){
+            printString("Abort: X-Edge Reached \r\n");
+            break;
+        }
+
         counter = 0;
         while (counter <= COUNTER_MAX)
         {
@@ -104,9 +112,8 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
         } else {
             curr_pos.x -= 1;
         }
-        if (edge_detect(moveDirection)){
-            printPoint(curr_pos);
-        }
+
+        printPoint(curr_pos);
     }
 
     printString("MOTORS X DONE\r\n");
@@ -121,8 +128,16 @@ int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
     volatile int counter = 0;
     volatile int step = 0;
 
+    printString("MOTORS Y MOVING \r\n");
+
     int i;
     for (i = 0; i < quarterRotations; i++) {
+
+        if (edge_detect(moveDirection)){
+            printString("Abort: Y-Edge Reached \r\n");
+            break;
+        }
+
         counter = 0;
         while (counter <= COUNTER_MAX)
         {
@@ -199,9 +214,8 @@ int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
         } else {
             curr_pos.y -= 1;
         }
-        if (edge_detect(moveDirection)){
-            printPoint(curr_pos);
-        }
+
+        printPoint(curr_pos);
 
     }
     printString("MOTORS Y DONE\r\n");
