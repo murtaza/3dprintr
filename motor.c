@@ -138,7 +138,7 @@ int move_x_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
         printCurrPos(curr_pos);
     }
 
-    printString("MOTORS X DONE\r\n");
+    printString("Finished X Movement\r\n");
     return 1;
 }
 
@@ -261,6 +261,6 @@ int move_y_motor(uint8_t quarterRotations, uint8_t dir, MOVE_DIRECTION moveDirec
 
         printCurrPos(curr_pos);
     }
-    printString("MOTORS Y DONE\r\n");
+    printString("Finished Y Movement\r\n");
     return 1;
 }
